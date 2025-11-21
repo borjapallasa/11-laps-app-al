@@ -84,23 +84,6 @@ export function AppInitializer() {
     // Check if running standalone (not in iframe)
     const isStandalone = window.self === window.top;
 
-    if (isStandalone) {
-      // Running standalone - skip INIT message requirement
-      logService.info("Running in standalone mode, skipping INIT message requirement");
-      
-      // Set default parent data for standalone mode
-      setParentData({
-        projectId: "standalone-project",
-        organizationId: "5ec92adf-57cb-4d08-817a-f523cc308cda", //ONLY TESTING
-        userId: "standalone-user",
-        appInstallationId: "standalone-installation",
-        permissions: []
-      });
-      
-      setIsInitialized(true);
-      return;
-    }
-
 
     //Running in iframe - require INIT message
     const initTimeout = setTimeout(() => {
