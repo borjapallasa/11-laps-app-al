@@ -129,7 +129,7 @@ function useAudioPlayer() {
     setCurrentTime(t); setDuration(d); setProgress(d > 0 ? t / d : 0);
   };
 
-  return { audioRef, hasAudio, setHasAudio, isPlaying, duration, currentTime, progress, seekPercent } as const;
+  return { audioRef, hasAudio, setHasAudio, isPlaying, duration, setDuration, currentTime, progress, seekPercent } as const;
 }
 
 export default function ElevenLabsTTSPage() {
@@ -152,7 +152,7 @@ export default function ElevenLabsTTSPage() {
   const [historyQuery, setHistoryQuery] = useState("");
   const filteredHistory = useMemo(() => filterHistory(historyItems, historyQuery), [historyItems, historyQuery]);
 
-  const { audioRef, hasAudio, setHasAudio, isPlaying, duration, currentTime, progress, seekPercent } = useAudioPlayer();
+  const { audioRef, hasAudio, setHasAudio, isPlaying, duration, setDuration, currentTime, progress, seekPercent } = useAudioPlayer();
   const [currentAudioUrl, setCurrentAudioUrl] = useState("");
   const [previewing, setPreviewing] = useState<string | null>(null);
   const selectedVoice = useMemo(() => voices.find(v => v.voice_id === selectedVoiceId), [voices, selectedVoiceId]);
