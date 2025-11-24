@@ -13,6 +13,7 @@ export type MessageType =
   | 'NAVIGATE'
   | 'REQUEST_PERMISSION'
   | 'UPLOAD'
+  | 'IMPORT_AUDIO'
   | 'RESIZE';
 
 // Message structure
@@ -210,6 +211,30 @@ class PostMessageService {
     const requestId = this.generateRequestId();
     this.sendMessage('UPLOAD', audioData, requestId);
     console.log('[PostMessageService] Requested audio upload to project:', audioData.name);
+    return requestId;
+  }
+
+  /**
+   * Send IMPORT_AUDIO event to parent app with audio details
+   */
+  importAudio(audioData: {
+    url: string;
+    name: string;
+    duration?: number;
+    voiceId: string;
+    voiceName?: string;
+    modelId: string;
+    text: string;
+    settings: {
+      stability: number;
+      similarity_boost: number;
+      style: number;
+      use_speaker_boost: boolean;
+    };
+  }): string {
+    const requestId = this.generateRequestId();
+    this.sendMessage('IMPORT_AUDIO', audioData, requestId);
+    console.log('[PostMessageService] Sent IMPORT_AUDIO event:', audioData.name);
     return requestId;
   }
 

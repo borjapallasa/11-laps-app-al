@@ -138,6 +138,23 @@ export default function ElevenLabsTTSPage() {
   useEffect(() => { if (!selectedVoiceId && voices.length) setSelectedVoiceId(voices[0].voice_id); }, [voices]);
 
   const [text, setText] = useState("");
+  const [projectContent, setProjectContent] = useState<string>("");
+
+  // Listen for INIT message from parent app
+  useEffect(() => {
+    const handleMessage = (event: MessageEvent) => {
+      try {
+        const message = event.data;
+        if (message?.type === "INIT" && message?.payload?.project?.content) {
+          setProjectContent(message.payload.project.content);
+        }
+      } catch (e) {
+        console.error("Error handling parent message:", e);
+      }
+    };
+    window.addEventListener("message", handleMessage);
+    return () => window.removeEventListener("message", handleMessage);
+  }, []);
   const [model, setModel] = useState("eleven_multilingual_v2");
   const [speed, setSpeed] = useState(0.2);
   const [stability, setStability] = useState(0.85);
@@ -240,7 +257,7 @@ export default function ElevenLabsTTSPage() {
         <TabsThree value={mobileTab} onChange={setMobileTab} items={["Text", "Configuration", "History"]} />
         <div className="pb-20">
           {mobileTab === "text" && (
-            <div className="pt-4"><Editor text={text} onChange={setText} hasAudio={hasAudio} /></div>
+            <div className="pt-4"><Editor text={text} onChange={setText} hasAudio={hasAudio} projectContent={projectContent} /></div>
           )}
           {mobileTab === "config" && (
             <div className="pt-4"><ConfigPanel
@@ -273,7 +290,7 @@ export default function ElevenLabsTTSPage() {
       <main className="mx-auto hidden max-w-7xl border-t border-neutral-200 px-6 pb-8 overflow-hidden min-h-0 h-[calc(100vh-120px)] md:block">
         <div className="md:flex md:items-stretch gap-8 min-h-0 h-full">
           <section className="flex-1 pr-4 md:pr-8 pt-8 min-h-full overflow-hidden">
-            <Editor text={text} onChange={setText} />
+            <Editor text={text} onChange={setText} projectContent={projectContent} />
           </section>
 
           <div className="hidden md:block w-px bg-neutral-200 self-stretch" />
@@ -376,22 +393,14 @@ function VoicesStrip({ voices, error, selectedVoiceId, onSelect, onPreview, prev
   );
 }
 
-function Editor({ text, onChange, hasAudio = false }: { text: string; onChange: (v: string) => void; hasAudio?: boolean }) {
-  const fileRef = React.useRef<HTMLInputElement | null>(null);
+function Editor({ text, onChange, hasAudio = false, projectContent = "" }: { text: string; onChange: (v: string) => void; hasAudio?: boolean; projectContent?: string }) {
   const empty = (text || "").length === 0;
 
-  const onImportClick = () => fileRef.current?.click();
-  const onFile = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const f = e.target.files?.[0];
-    if (!f) return;
-    try {
-      const content = await f.text();
-      onChange(content);
-    } catch (err) {
-      console.error(err);
-      alert("Could not import this file.");
-    } finally {
-      if (fileRef.current) fileRef.current.value = "";
+  const onImportClick = () => {
+    if (projectContent) {
+      onChange(projectContent);
+    } else {
+      alert("No project content available from parent app.");
     }
   };
 
@@ -414,12 +423,10 @@ function Editor({ text, onChange, hasAudio = false }: { text: string; onChange: 
               className="pointer-events-auto ml-2 select-none pr-[2px] pt-[2px] opacity-70 underline decoration-dotted underline-offset-2 transition-opacity hover:opacity-100"
               style={{ textShadow: "none" }}
             >
-              📁 Import Content
+              📁 Import from Project
             </button>
           </div>
         )}
-
-        <input ref={fileRef} type="file" accept=".txt,.md,.markdown,.json,.srt,.vtt,.csv,.rtf" className="hidden" onChange={onFile} />
       </div>
 
       <div className="mt-4 flex flex-wrap items-center gap-3">

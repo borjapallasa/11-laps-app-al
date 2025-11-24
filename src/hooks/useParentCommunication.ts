@@ -21,6 +21,24 @@ export function useParentCommunication() {
     return postMessageService.uploadToProject(audioData);
   };
 
+  const importAudio = (audioData: {
+    url: string;
+    name: string;
+    duration?: number;
+    voiceId: string;
+    voiceName?: string;
+    modelId: string;
+    text: string;
+    settings: {
+      stability: number;
+      similarity_boost: number;
+      style: number;
+      use_speaker_boost: boolean;
+    };
+  }) => {
+    return postMessageService.importAudio(audioData);
+  };
+
   const navigate = (url: string, external: boolean = true) => {
     postMessageService.navigate(url, external);
   };
@@ -34,6 +52,7 @@ export function useParentCommunication() {
     reportError,
     log,
     uploadToProject,
+    importAudio,
     navigate,
     requestPermission
   };

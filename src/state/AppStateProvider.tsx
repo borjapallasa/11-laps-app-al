@@ -1,6 +1,7 @@
 "use client";
 import React, { createContext, useContext, useState } from "react";
 import type { InitPayload, MediaItem } from "@/src/services/postMessageService";
+import { ToastProvider } from "@/src/components/Toast";
 
 // Parent data from INIT message
 type ParentData = {
@@ -124,7 +125,11 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
     setCurrentJobId,
   };
 
-  return <Ctx.Provider value={value}>{children}</Ctx.Provider>;
+  return (
+    <Ctx.Provider value={value}>
+      <ToastProvider>{children}</ToastProvider>
+    </Ctx.Provider>
+  );
 }
 
 export function useAppState() {

@@ -6,6 +6,7 @@ import { useParentCommunication } from "@/src/hooks/useParentCommunication";
 import { useElevenLabsVoices } from "@/src/hooks/useElevenLabsVoices";
 import { useElevenLabsHistory } from "@/src/hooks/useElevenLabsHistory";
 import { logService } from "@/src/services/logService";
+import { useToast } from "@/src/components/Toast";
 
 /**
  * ElevenLabs TTS – Clean, robust build (mobile-friendly)
@@ -88,9 +89,10 @@ function useAudioPlayer() {
 }
 
 export default function ElevenLabsTTSPage() {
-  const { organizationId, projectId } = useParentApp();
-  const { uploadToProject } = useParentCommunication();
+  const { organizationId, projectId, projectContent } = useParentApp();
+  const { uploadToProject, importAudio } = useParentCommunication();
   const { voices, loading: loadingVoices, error: voicesError } = useElevenLabsVoices();
+  const { showToast } = useToast();
   
   const {
     selectedVoiceId,
@@ -180,7 +182,7 @@ export default function ElevenLabsTTSPage() {
 
   const playHistoryAudio = async (it: any) => {
     if (!organizationId) {
-      alert("Organization ID not available");
+      showToast("Organization ID not available", "error");
       return;
     }
     try {
@@ -196,21 +198,21 @@ export default function ElevenLabsTTSPage() {
       await setAudioSource(dataUrl, ct);
     } catch (e) {
       console.error(e);
-      alert("Failed to load audio");
+      showToast("Failed to load audio", "error");
     }
   };
 
   const handleGenerateAudio = async () => {
     if (!text.trim()) {
-      alert("Please enter some text to generate audio");
+      showToast("Please enter some text to generate audio", "warning");
       return;
     }
     if (!selectedVoiceId) {
-      alert("Please select a voice");
+      showToast("Please select a voice", "warning");
       return;
     }
     if (!organizationId || !projectId) {
-      alert("Organization or project ID not available");
+      showToast("Organization or project ID not available", "error");
       return;
     }
 
@@ -271,9 +273,10 @@ export default function ElevenLabsTTSPage() {
       });
 
       logService.info("Audio generated and uploaded to parent app", { fileName });
+      showToast("Audio generated successfully!", "success");
     } catch (error: any) {
       logService.error("Failed to generate audio", { error: error.message });
-      alert(`Failed to generate audio: ${error.message}`);
+      showToast(`Failed to generate audio: ${error.message}`, "error");
     } finally {
       setIsGenerating(false);
     }
@@ -281,36 +284,38 @@ export default function ElevenLabsTTSPage() {
 
   const handleExportToProject = async () => {
     if (!currentAudioUrl) {
-      alert("No audio to export. Please generate audio first.");
+      showToast("No audio to export. Please generate audio first.", "error");
       return;
     }
     if (!organizationId || !projectId) {
-      alert("Organization or project ID not available");
+      showToast("Organization or project ID not available", "error");
       return;
     }
 
     try {
       const fileName = `elevenlabs-${Date.now()}.mp3`;
-      uploadToProject({
+      const voiceName = selectedVoice?.name || "";
+
+      importAudio({
         url: currentAudioUrl,
         name: fileName,
-        metadata: {
-          voice_id: selectedVoiceId,
-          model_id: model,
-          text: text,
-          voice_settings: {
-            stability,
-            similarity_boost: similarity,
-            style,
-            use_speaker_boost: speakerBoost
-          }
+        duration: duration,
+        voiceId: selectedVoiceId,
+        voiceName: voiceName,
+        modelId: model,
+        text: text,
+        settings: {
+          stability,
+          similarity_boost: similarity,
+          style,
+          use_speaker_boost: speakerBoost
         }
       });
-      logService.info("Audio exported to parent app", { fileName });
-      alert("Audio exported to project successfully!");
+      logService.info("Audio exported to parent app via IMPORT_AUDIO event", { fileName });
+      showToast("Audio imported successfully!", "success");
     } catch (error: any) {
       logService.error("Failed to export audio", { error: error.message });
-      alert(`Failed to export audio: ${error.message}`);
+      showToast(`Failed to export audio: ${error.message}`, "error");
     }
   };
 
@@ -333,14 +338,16 @@ export default function ElevenLabsTTSPage() {
         <div className="pb-40">
           {mobileTab === "text" && (
             <div className="pt-4">
-              <Editor 
-                text={text} 
-                onChange={setText} 
+              <Editor
+                text={text}
+                onChange={setText}
                 hasAudio={hasAudio}
                 onGenerate={handleGenerateAudio}
                 onExport={handleExportToProject}
                 isGenerating={isGenerating}
                 hasCurrentAudio={!!currentAudioUrl}
+                projectContent={projectContent}
+                showToast={showToast}
               />
             </div>
           )}
@@ -379,7 +386,7 @@ export default function ElevenLabsTTSPage() {
       <main className="mx-auto hidden max-w-7xl border-t border-neutral-200 px-6 pb-8 md:block">
         <div className="md:flex md:items-start gap-8 py-8">
           <section className="flex-1 pr-4 md:pr-8">
-            <Editor text={text} onChange={setText} />
+            <Editor text={text} onChange={setText} projectContent={projectContent} showToast={showToast} />
           </section>
 
           <div className="hidden md:block w-px bg-neutral-200 self-stretch min-h-[400px]" />
@@ -486,38 +493,48 @@ function VoicesStrip({ voices, error, selectedVoiceId, onSelect, onPreview, prev
   );
 }
 
-function Editor({ 
-  text, 
-  onChange, 
+function Editor({
+  text,
+  onChange,
   hasAudio = false,
   onGenerate,
   onExport,
   isGenerating = false,
-  hasCurrentAudio = false
-}: { 
-  text: string; 
-  onChange: (v: string) => void; 
+  hasCurrentAudio = false,
+  projectContent = "",
+  showToast
+}: {
+  text: string;
+  onChange: (v: string) => void;
   hasAudio?: boolean;
   onGenerate?: () => void;
   onExport?: () => void;
   isGenerating?: boolean;
   hasCurrentAudio?: boolean;
+  projectContent?: string;
+  showToast?: (message: string, type?: 'success' | 'error' | 'info' | 'warning') => void;
 }) {
-  const fileRef = React.useRef<HTMLInputElement | null>(null);
   const empty = (text || "").length === 0;
 
-  const onImportClick = () => fileRef.current?.click();
-  const onFile = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const f = e.target.files?.[0];
-    if (!f) return;
-    try {
-      const content = await f.text();
-      onChange(content);
-    } catch (err) {
-      console.error(err);
-      alert("Could not import this file.");
-    } finally {
-      if (fileRef.current) fileRef.current.value = "";
+  const stripHtml = (html: string): string => {
+    // Create a temporary div element to parse HTML
+    const tmp = document.createElement("div");
+    tmp.innerHTML = html;
+    // Get text content which automatically strips HTML tags
+    return tmp.textContent || tmp.innerText || "";
+  };
+
+  const onImportClick = () => {
+    if (projectContent) {
+      const plainText = stripHtml(projectContent);
+      onChange(plainText);
+      if (showToast) {
+        showToast("Project content imported successfully!", "success");
+      }
+    } else {
+      if (showToast) {
+        showToast("No project content available from parent app.", "error");
+      }
     }
   };
 
@@ -540,12 +557,10 @@ function Editor({
               className="pointer-events-auto ml-2 select-none pr-[2px] pt-[2px] opacity-70 underline decoration-dotted underline-offset-2 transition-opacity hover:opacity-100"
               style={{ textShadow: "none" }}
             >
-              📁 Import Content
+              📁 Import from Project
             </button>
           </div>
         )}
-
-        <input ref={fileRef} type="file" accept=".txt,.md,.markdown,.json,.srt,.vtt,.csv,.rtf" className="hidden" onChange={onFile} />
       </div>
 
       <div className="mt-4 flex flex-wrap items-center gap-3">
