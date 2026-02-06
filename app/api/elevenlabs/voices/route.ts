@@ -41,7 +41,7 @@ export async function GET(request: NextRequest) {
     const apiKey = decrypt(encryptedBuffer);
 
     // Fetch voices from ElevenLabs
-    const response = await fetch('https://api.elevenlabs.io/v2/voices', {
+    const response = await fetch('https://api.elevenlabs.io/v2/voices?voice_type=saved', {
       headers: {
         'xi-api-key': apiKey
       }
