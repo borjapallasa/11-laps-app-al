@@ -73,13 +73,13 @@ export function ApiKeyModal({ organizationId, onSuccess }: ApiKeyModalProps) {
   };
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-lg shadow-xl max-w-md w-full p-6">
+    <div className="fixed inset-0 bg-foreground/50 flex items-center justify-center z-50 p-4">
+      <div className="bg-popover rounded-lg shadow-popover max-w-md w-full p-6">
         <div className="mb-4">
-          <h2 className="text-2xl font-bold text-gray-900 mb-2">
+          <h2 className="text-big font-big text-foreground mb-2">
             ElevenLabs API Key Required
           </h2>
-          <p className="text-gray-600 text-sm">
+          <p className="text-muted-foreground text-sm font-regular">
             To use this app, you need to provide your ElevenLabs API key. Your key will be encrypted and stored securely.
           </p>
         </div>
@@ -88,7 +88,7 @@ export function ApiKeyModal({ organizationId, onSuccess }: ApiKeyModalProps) {
           <div className="mb-4">
             <label
               htmlFor="apiKey"
-              className="block text-sm font-medium text-gray-700 mb-2"
+              className="block text-sm font-regular text-foreground mb-2"
             >
               ElevenLabs API Key
             </label>
@@ -97,12 +97,15 @@ export function ApiKeyModal({ organizationId, onSuccess }: ApiKeyModalProps) {
               id="apiKey"
               value={apiKey}
               onChange={(e) => setApiKey(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full min-h-8 px-3 py-1.5 text-sm text-foreground bg-popover-inner border border-border rounded-lg outline-none focus-visible:ring-2 focus-visible:ring-ring"
               placeholder="Enter your ElevenLabs API key"
               disabled={isValidating}
             />
             {error && (
-              <p className="mt-2 text-sm text-red-600">{error}</p>
+              <p className="mt-2 flex items-center gap-2 text-sm text-error">
+                <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-error" />
+                {error}
+              </p>
             )}
           </div>
 
@@ -111,7 +114,7 @@ export function ApiKeyModal({ organizationId, onSuccess }: ApiKeyModalProps) {
               href="https://elevenlabs.io/app/settings/api-keys"
               target="_blank"
               rel="noopener noreferrer"
-              className="text-sm text-blue-600 hover:text-blue-700 underline"
+              className="text-sm font-regular text-foreground hover:text-muted-foreground underline"
             >
               Get your API key from ElevenLabs
             </a>
@@ -120,12 +123,12 @@ export function ApiKeyModal({ organizationId, onSuccess }: ApiKeyModalProps) {
           <button
             type="submit"
             disabled={isValidating || !apiKey.trim()}
-            className="w-full bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors font-semibold text-base shadow-md"
+            className="w-full min-h-10 bg-primary text-primary-foreground px-5 py-2 rounded-2xl hover:opacity-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 disabled:opacity-50 disabled:pointer-events-none transition capitalize font-regular text-base"
           >
             {isValidating ? (
               <span className="flex items-center justify-center">
                 <svg
-                  className="animate-spin -ml-1 mr-2 h-4 w-4 text-white"
+                  className="animate-spin -ml-1 mr-2 h-4 w-4 text-primary-foreground"
                   fill="none"
                   viewBox="0 0 24 24"
                 >
@@ -151,9 +154,9 @@ export function ApiKeyModal({ organizationId, onSuccess }: ApiKeyModalProps) {
           </button>
         </form>
 
-        <div className="mt-4 p-3 bg-blue-50 rounded-md">
-          <p className="text-xs text-blue-800">
-            <strong>Note:</strong> Your API key is encrypted using AES-256-GCM before being stored in the database. It is never exposed in plain text.
+        <div className="mt-4 p-3 bg-info-bg rounded-lg">
+          <p className="text-sm font-regular text-info">
+            <strong className="font-big">Note:</strong> Your API key is encrypted using AES-256-GCM before being stored in the database. It is never exposed in plain text.
           </p>
         </div>
       </div>
@@ -162,4 +165,4 @@ export function ApiKeyModal({ organizationId, onSuccess }: ApiKeyModalProps) {
 }
 
 export default ApiKeyModal;
-
+```[cite: 1]
