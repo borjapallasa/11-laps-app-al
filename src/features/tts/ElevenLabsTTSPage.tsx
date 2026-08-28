@@ -322,7 +322,7 @@ export default function ElevenLabsTTSPage() {
   if (loadingVoices && !voices.length) return <Splash />;
 
   return (
-    <div className={"w-full bg-white text-neutral-900 " + (hasAudio ? "pb-28" : "pb-4")}> 
+    <div className={"w-full bg-background text-foreground " + (hasAudio ? "pb-28" : "pb-4")}> 
       <VoicesStrip
         voices={voices}
         error={voicesError}
@@ -383,16 +383,16 @@ export default function ElevenLabsTTSPage() {
       </section>
 
       {/* Desktop main content */}
-      <main className="mx-auto hidden max-w-7xl border-t border-neutral-200 px-6 pb-8 md:block">
+      <main className="mx-auto hidden max-w-7xl border-t border-border px-6 pb-8 md:block">
         <div className="md:flex md:items-start gap-8 py-8">
           <section className="flex-1 pr-4 md:pr-8">
             <Editor text={text} onChange={setText} projectContent={projectContent} showToast={showToast} />
           </section>
 
-          <div className="hidden md:block w-px bg-neutral-200 self-stretch min-h-[400px]" />
+          <div className="hidden md:block w-px bg-border self-stretch min-h-[400px]" />
 
           <aside className="md:px-4 md:w-[380px] flex flex-col">
-            <div className="sticky top-6 z-10 bg-white">
+            <div className="sticky top-6 z-10 bg-background">
               <Tabs value={tab} onChange={setTab} items={["Configuration", "History"]} />
             </div>
             <div className={"mt-2 " + (hasAudio ? "pb-28" : "pb-4")}>
@@ -447,12 +447,15 @@ export default function ElevenLabsTTSPage() {
 
 function VoicesStrip({ voices, error, selectedVoiceId, onSelect, onPreview, previewing }: any) {
   return (
-    <section className="w-full bg-white">
+    <section className="w-full bg-background">
       <div className="mx-auto max-w-7xl px-6 pt-2 pb-4">
-        <div className="mb-2 text-[11px] font-medium uppercase tracking-wide text-neutral-500">Voices</div>
+        <div className="mb-2 text-sm font-regular uppercase tracking-wide text-muted-foreground">Voices</div>
         <div className="flex gap-3 overflow-x-auto pb-1">
           {error ? (
-            <div className="text-xs text-red-600">{error}</div>
+            <div className="flex items-center gap-2 text-sm text-error">
+              <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-error" />
+              {error}
+            </div>
           ) : (
             (voices.length ? voices : Array.from({ length: 6 })).map((v: any, i: number) => (
               v ? (
@@ -462,19 +465,19 @@ function VoicesStrip({ voices, error, selectedVoiceId, onSelect, onPreview, prev
                   tabIndex={0}
                   onClick={() => { onSelect(v.voice_id); if (v.preview_url) onPreview(v.preview_url, v.voice_id); }}
                   onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") onSelect(v.voice_id); }}
-                  className={`group w-[200px] shrink-0 rounded-xl border p-2 text-left transition hover:shadow-sm ${selectedVoiceId === v.voice_id ? "border-neutral-900" : "border-neutral-200"}`}
+                  className={`group w-[200px] shrink-0 rounded-lg border p-2 text-left transition hover:shadow-popover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring ${selectedVoiceId === v.voice_id ? "border-primary bg-selected" : "border-border"}`}
                   title={v.name}
                 >
                   <div className="flex items-center gap-2">
                     <div className={`h-8 w-8 rounded-lg ${badgeGradientFor(v?.labels?.language)}`} />
                     <div className="min-w-0">
-                      <div className="truncate text-sm font-medium leading-tight">{flagFor(v?.labels)} {v.name}</div>
-                      <div className="mt-0.5 hidden truncate text-[11px] text-neutral-500 md:block">{formatLabels(v?.labels)}</div>
+                      <div className="truncate text-sm font-regular leading-tight">{flagFor(v?.labels)} {v.name}</div>
+                      <div className="mt-0.5 hidden truncate text-sm text-muted-foreground md:block">{formatLabels(v?.labels)}</div>
                     </div>
                     {v.preview_url && (
                       <button
                         type="button"
-                        className="ml-auto hidden rounded-full border border-neutral-300 px-2 py-0.5 text-[11px] leading-5 text-neutral-700 transition hover:bg-neutral-100 group-hover:inline-block"
+                        className="ml-auto hidden rounded-full border border-secondary-border px-2 py-0.5 text-sm leading-5 text-secondary-foreground transition hover:bg-secondary-hover group-hover:inline-block"
                         onClick={(e) => { e.preventDefault(); e.stopPropagation(); previewing === v.voice_id ? null : onPreview(v.preview_url, v.voice_id); }}
                       >
                         {previewing === v.voice_id ? "■" : "▶"}
@@ -483,7 +486,7 @@ function VoicesStrip({ voices, error, selectedVoiceId, onSelect, onPreview, prev
                   </div>
                 </div>
               ) : (
-                <div key={i} className="h-[72px] w-[200px] shrink-0 animate-pulse rounded-xl border border-neutral-200 bg-neutral-100" />
+                <div key={i} className="h-[72px] w-[200px] shrink-0 animate-pulse rounded-lg border border-border bg-popover-inner" />
               )
             ))
           )}
@@ -580,12 +583,12 @@ function Editor({
         <textarea
           value={text}
           onChange={(e) => onChange(e.target.value)}
-          className="h-[360px] w-full resize-none border-0 bg-transparent p-0 outline-none"
+          className="h-[360px] w-full resize-none border-0 bg-transparent p-0 text-base text-foreground outline-none"
           placeholder=""
         />
 
         {empty && (
-          <div className="pointer-events-none absolute left-0 top-0 flex w-full items-center text-neutral-400" style={{ textShadow: "none" }}>
+          <div className="pointer-events-none absolute left-0 top-0 flex w-full items-center text-muted-foreground" style={{ textShadow: "none" }}>
             <span className="pl-[1px] pt-[2px]">Write your text here or</span>
             <button
               type="button"
@@ -600,11 +603,11 @@ function Editor({
       </div>
 
       <div className="mt-4 flex flex-wrap items-center gap-3">
-        <div className="text-xs text-neutral-500">{text.length.toLocaleString()} / 5,000 characters</div>
+        <div className="text-sm text-muted-foreground">{text.length.toLocaleString()} / 5,000 characters</div>
       </div>
 
       <div className={`md:hidden fixed inset-x-0 ${hasAudio ? "bottom-28" : "bottom-4"} z-30 px-4 pb-4`}>
-        <Btn className="w-full shadow-lg" onClick={onGenerate} disabled={isGenerating}>
+        <Btn className="w-full shadow-popover" onClick={onGenerate} disabled={isGenerating}>
           {isGenerating ? "Generating..." : "Generate audio"}
         </Btn>
         <Btn variant="ghost" className="mt-2 w-full" onClick={onExport} disabled={!hasCurrentAudio}>
@@ -630,7 +633,7 @@ function ConfigPanel(props: any) {
       <Range label="Stability" value={stability} onChange={onStability} left="More variable" right="More stable" />
       <Range label="Similarity" value={similarity} onChange={onSimilarity} left="Low" right="High" />
       <Range label="Style exaggeration" value={style} onChange={onStyle} left="None" right="Exaggerated" />
-      <div className="mt-4 flex items-center justify-between"><label className="text-sm">Speaker boost</label><Switch checked={speakerBoost} onChange={onSpeakerBoost} /></div>
+      <div className="mt-4 flex items-center justify-between"><label className="text-sm font-regular text-foreground">Speaker boost</label><Switch checked={speakerBoost} onChange={onSpeakerBoost} /></div>
       <div className="-mt-[10px]">
         <Btn className="w-full" onClick={onGenerate} disabled={isGenerating}>
           {isGenerating ? "Generating..." : "Generate audio"}
@@ -648,7 +651,7 @@ function ConfigPanel(props: any) {
 function HistoryPanel({ query, onQuery, items, loading, error, onSelect }: any) {
   return (
     <div className="space-y-3">
-      <input className="mb-2 w-full rounded-xl border border-neutral-300 bg-white px-3 py-2 text-sm focus:outline-none" placeholder="Search history..." value={query} onChange={(e) => onQuery((e.target as HTMLInputElement).value)} />
+      <input className="mb-2 min-h-8 w-full rounded-lg border border-border bg-popover px-3 py-1.5 text-sm text-foreground placeholder:text-muted-foreground outline-none focus-visible:ring-2 focus-visible:ring-ring" placeholder="Search history..." value={query} onChange={(e) => onQuery((e.target as HTMLInputElement).value)} />
       <div className="max-h-[600px] overflow-y-auto pr-1">
         <HistoryList items={items} loading={loading} error={error} onSelect={onSelect} />
       </div>
@@ -658,11 +661,11 @@ function HistoryPanel({ query, onQuery, items, loading, error, onSelect }: any) 
 
 function PlayerBar({ isPlaying, onToggle, title, progress, currentTime, duration, onSeek, downloadUrl }: any) {
   return (
-    <footer className="fixed inset-x-0 bottom-0 z-40 border-t border-neutral-200 bg-white/95 backdrop-blur supports-[backdrop-filter]:bg-white/70">
+    <footer className="fixed inset-x-0 bottom-0 z-40 border-t border-border bg-popover/95 shadow-popover backdrop-blur supports-[backdrop-filter]:bg-popover/70">
       <div className="mx-auto max-w-7xl px-4 md:px-6 py-2.5 md:py-3 grid grid-cols-[auto,1fr,auto] items-center gap-2 md:gap-3">
         <button
           onClick={onToggle}
-          className="grid h-9 w-9 md:h-10 md:w-10 place-items-center rounded-full bg-neutral-900 text-white"
+          className="grid h-9 w-9 md:h-10 md:w-10 place-items-center rounded-full bg-primary text-primary-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
           aria-label={isPlaying ? "Pause" : "Play"}
         >
           {isPlaying ? "❚❚" : "▶"}
@@ -670,21 +673,21 @@ function PlayerBar({ isPlaying, onToggle, title, progress, currentTime, duration
 
         <div className="min-w-0 w-full">
           <div className="flex items-center justify-between">
-            <div className="truncate text-sm text-neutral-700 md:text-xs" title={title}>{title}</div>
-            <div className="hidden md:block whitespace-nowrap text-xs tabular-nums text-neutral-600 md:w-28 text-right">
-              {fmtTime(currentTime)} <span className="mx-1 text-neutral-400">/</span> {fmtTime(duration)}
+            <div className="truncate text-sm text-foreground" title={title}>{title}</div>
+            <div className="hidden md:block whitespace-nowrap text-sm tabular-nums text-muted-foreground md:w-28 text-right">
+              {fmtTime(currentTime)} <span className="mx-1 text-muted-foreground">/</span> {fmtTime(duration)}
             </div>
           </div>
 
           <div className="mt-1 grid grid-cols-[1fr,auto] items-center gap-2">
             <div
-              className="relative h-1 w-full cursor-pointer rounded-full bg-neutral-200"
+              className="relative h-1 w-full cursor-pointer rounded-full bg-border"
               onClick={(e) => {
                 const rect = (e.currentTarget as HTMLDivElement).getBoundingClientRect();
                 const pct = (e.clientX - rect.left) / rect.width; onSeek(pct);
               }}
             >
-              <div className="absolute left-0 top-0 h-1 rounded-full bg-neutral-900" style={{ width: `${Math.max(0, Math.min(1, progress)) * 100}%` }} />
+              <div className="absolute left-0 top-0 h-1 rounded-full bg-primary" style={{ width: `${Math.max(0, Math.min(1, progress)) * 100}%` }} />
             </div>
 
             <button
@@ -699,7 +702,7 @@ function PlayerBar({ isPlaying, onToggle, title, progress, currentTime, duration
               }}
               title="Download"
               aria-label="Download audio"
-              className="grid h-8 w-8 place-items-center rounded-full border border-neutral-300 text-neutral-700 hover:bg-neutral-50 md:hidden"
+              className="grid h-8 w-8 place-items-center rounded-full border border-secondary-border text-secondary-foreground hover:bg-secondary-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring md:hidden"
             >
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="h-4 w-4">
                 <path d="M12 3a1 1 0 0 1 1 1v8.586l2.293-2.293a1 1 0 1 1 1.414 1.414l-4 4a1 1 0 0 1-1.414 0l-4-4a1 1 0 0 1 1.414-1.414L11 12.586V4a1 1 0 0 1 1-1z"/>
@@ -707,8 +710,8 @@ function PlayerBar({ isPlaying, onToggle, title, progress, currentTime, duration
               </svg>
             </button>
 
-            <div className="col-span-1 col-start-1 row-start-2 mt-1 block whitespace-nowrap text-right text-xs tabular-nums text-neutral-600 md:hidden">
-              {fmtTime(currentTime)} <span className="mx-1 text-neutral-400">/</span> {fmtTime(duration)}
+            <div className="col-span-1 col-start-1 row-start-2 mt-1 block whitespace-nowrap text-right text-sm tabular-nums text-muted-foreground md:hidden">
+              {fmtTime(currentTime)} <span className="mx-1 text-muted-foreground">/</span> {fmtTime(duration)}
             </div>
           </div>
         </div>
@@ -725,7 +728,7 @@ function PlayerBar({ isPlaying, onToggle, title, progress, currentTime, duration
           }}
           title="Download"
           aria-label="Download audio"
-          className="hidden md:grid h-8 w-8 place-items-center justify-self-end rounded-full border border-neutral-300 text-neutral-700 hover:bg-neutral-50"
+          className="hidden md:grid h-8 w-8 place-items-center justify-self-end rounded-full border border-secondary-border text-secondary-foreground hover:bg-secondary-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
         >
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="h-4 w-4">
             <path d="M12 3a1 1 0 0 1 1 1v8.586l2.293-2.293a1 1 0 1 1 1.414 1.414l-4 4a1 1 0 0 1-1.414 0l-4-4a1 1 0 0 1 1.414-1.414L11 12.586V4a1 1 0 0 1 1-1z"/>
@@ -745,13 +748,13 @@ const MODEL_OPTIONS = [
 
 function Tabs({ value, onChange, items }: { value: string; onChange: (v: any) => void; items: [string, string] }) {
   return (
-    <div className="mb-4 border-b border-neutral-200">
+    <div className="mb-4 border-b border-border">
       <nav className="-mb-px flex gap-6">
         {items.map((label, idx) => {
           const key = label.toLowerCase();
           const active = (value === "config" && idx === 0) || (value === "history" && idx === 1);
           return (
-            <button key={key} className={`pb-2 text-sm font-medium ${active ? "border-b-2 border-neutral-900 text-neutral-900" : "border-b-2 border-transparent text-neutral-500 hover:text-neutral-700"}`} onClick={() => onChange(idx === 0 ? "config" : "history")}>{label}</button>
+            <button key={key} className={`pb-2 text-sm font-regular focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded-t ${active ? "border-b-2 border-primary text-foreground" : "border-b-2 border-transparent text-muted-foreground hover:text-foreground"}`} onClick={() => onChange(idx === 0 ? "config" : "history")}>{label}</button>
           );
         })}
       </nav>
@@ -762,13 +765,13 @@ function Tabs({ value, onChange, items }: { value: string; onChange: (v: any) =>
 function TabsThree({ value, onChange, items }: { value: string; onChange: (v: any) => void; items: [string, string, string] }) {
   const keys = ["text", "config", "history"];
   return (
-    <div className="mb-3 border-b border-neutral-200">
+    <div className="mb-3 border-b border-border">
       <nav className="-mb-px flex gap-6 overflow-x-auto">
         {items.map((label, idx) => {
           const key = keys[idx];
           const active = value === key;
           return (
-            <button key={key} className={`pb-2 text-sm font-medium ${active ? "border-b-2 border-neutral-900 text-neutral-900" : "border-b-2 border-transparent text-neutral-500 hover:text-neutral-700"}`} onClick={() => onChange(key)}>{label}</button>
+            <button key={key} className={`pb-2 text-sm font-regular focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded-t ${active ? "border-b-2 border-primary text-foreground" : "border-b-2 border-transparent text-muted-foreground hover:text-foreground"}`} onClick={() => onChange(key)}>{label}</button>
           );
         })}
       </nav>
@@ -779,10 +782,10 @@ function TabsThree({ value, onChange, items }: { value: string; onChange: (v: an
 function Select({ value, onChange, options, className = "" }: { value: string; onChange: (v: string) => void; options: { label: string; value: string }[]; className?: string }) {
   return (
     <div className={`relative w-full ${className}`}>
-      <select className="w-full appearance-none rounded-xl border border-neutral-300 bg-white px-3 py-2 pr-8 text-sm focus:outline-none" value={value} onChange={(e) => onChange((e.target as HTMLSelectElement).value)}>
+      <select className="w-full min-h-8 appearance-none rounded-lg border border-border bg-popover px-3 py-1.5 pr-8 text-sm text-foreground outline-none focus-visible:ring-2 focus-visible:ring-ring" value={value} onChange={(e) => onChange((e.target as HTMLSelectElement).value)}>
         {options.map((o) => (<option key={o.value} value={o.value}>{o.label}</option>))}
       </select>
-      <span className="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 text-neutral-500">▾</span>
+      <span className="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground">▾</span>
     </div>
   );
 }
@@ -792,21 +795,21 @@ function Range({ label, value, onChange, left, right, format = (v: number) => `$
   const knobLeft: any = pct <= 0 ? 7 : pct >= 100 ? "calc(100% - 7px)" : `calc(${pct}% - 7px)`;
   return (
     <div className="mb-5 pt-2">
-      <div className="mb-2 flex items-center justify-between"><div className="text-sm font-medium">{label}</div><div className="rounded-md px-2 py-0.5 text-xs text-neutral-600">{format(value)}</div></div>
-      <div className="relative h-1.5 w-full rounded-full bg-neutral-200">
-        <div className="absolute left-0 top-0 h-1.5 rounded-full bg-neutral-900" style={{ width: `${pct}%` }} />
-        <div className="absolute top-1/2 -translate-y-1/2 rounded-full border border-neutral-900 bg-white shadow-sm" style={{ left: knobLeft, height: 14, width: 14 }} />
+      <div className="mb-2 flex items-center justify-between"><div className="text-sm font-regular text-foreground">{label}</div><div className="rounded-lg px-2 py-0.5 text-sm text-muted-foreground">{format(value)}</div></div>
+      <div className="relative h-1.5 w-full rounded-full bg-border">
+        <div className="absolute left-0 top-0 h-1.5 rounded-full bg-primary" style={{ width: `${pct}%` }} />
+        <div className="absolute top-1/2 -translate-y-1/2 rounded-full border border-primary bg-popover" style={{ left: knobLeft, height: 14, width: 14 }} />
         <input type="range" min={0} max={1} step={0.01} value={value} onChange={(e) => onChange(parseFloat((e.target as HTMLInputElement).value))} className="absolute left-0 top-0 h-3.5 w-full cursor-pointer opacity-0" />
       </div>
-      <div className="mt-1.5 flex justify-between text-xs text-neutral-500"><span>{left}</span><span>{right}</span></div>
+      <div className="mt-1.5 flex justify-between text-sm text-muted-foreground"><span>{left}</span><span>{right}</span></div>
     </div>
   );
 }
 
 function Switch({ checked, onChange }: { checked: boolean; onChange: (v: boolean) => void }) {
   return (
-    <button onClick={() => onChange(!checked)} className={`relative inline-flex h-6 w-11 items-center rounded-full border transition ${checked ? "border-neutral-900 bg-neutral-900" : "border-neutral-300 bg-neutral-200"}`} aria-pressed={checked} role="switch">
-      <span className={`inline-block h-5 w-5 transform rounded-full bg-white transition ${checked ? "translate-x-5" : "translate-x-1"}`} />
+    <button onClick={() => onChange(!checked)} className={`relative inline-flex h-6 w-11 items-center rounded-full border transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 ${checked ? "border-primary bg-primary" : "border-secondary-border bg-border"}`} aria-pressed={checked} role="switch">
+      <span className={`inline-block h-5 w-5 transform rounded-full bg-popover transition ${checked ? "translate-x-5" : "translate-x-1"}`} />
     </button>
   );
 }
@@ -814,7 +817,7 @@ function Switch({ checked, onChange }: { checked: boolean; onChange: (v: boolean
 function Card({ title, children }: { title: string; children: React.ReactNode }) {
   return (
     <div className="p-0">
-      <div className="mb-4"><h3 className="text-sm font-semibold">{title}</h3></div>
+      <div className="mb-4"><h3 className="text-big font-big text-foreground">{title}</h3></div>
       {children}
     </div>
   );
@@ -822,13 +825,15 @@ function Card({ title, children }: { title: string; children: React.ReactNode })
 
 function Field({ label, children }: { label: string; children: React.ReactNode }) {
   return (
-    <div className="mb-4"><div className="mb-2 text-sm font-medium">{label}</div>{children}</div>
+    <div className="mb-4"><div className="mb-2 text-sm font-regular text-foreground">{label}</div>{children}</div>
   );
 }
 
 function Btn({ children, variant = "solid", className = "", onClick, disabled = false }: any) {
-  const base = "h-9 rounded-lg px-3 text-sm";
-  const style = variant === "ghost" ? "border border-neutral-300 hover:bg-neutral-50" : "bg-neutral-900 text-white hover:opacity-95";
+  const base = "min-h-8 rounded-2xl px-4 py-1 text-sm capitalize focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 transition disabled:pointer-events-none";
+  const style = variant === "ghost"
+    ? "bg-secondary border border-secondary-border text-secondary-foreground hover:bg-secondary-hover active:bg-secondary-active"
+    : "bg-primary border border-primary text-primary-foreground hover:opacity-95";
   const disabledStyle = disabled ? "opacity-50 cursor-not-allowed" : "";
   return (
     <button 
@@ -843,10 +848,10 @@ function Btn({ children, variant = "solid", className = "", onClick, disabled = 
 
 function Splash() {
   return (
-    <div className="grid min-h-screen place-items-center bg-white">
+    <div className="grid min-h-screen place-items-center bg-background">
       <div className="flex flex-col items-center gap-4">
         <img src="https://eleven-public-cdn.elevenlabs.io/payloadcms/9trrmnj2sj8-logo-logo.svg" alt="ElevenLabs logo" className="h-36 w-auto animate-pulse" />
-        <div className="text-sm text-neutral-600">Loading App...</div>
+        <div className="text-sm font-regular text-muted-foreground">Loading App...</div>
       </div>
     </div>
   );
@@ -902,25 +907,30 @@ function filterHistory(items: any[], query: string) {
 }
 
 function HistoryList({ items, loading, error, onSelect }: { items: any[]; loading: boolean; error: string; onSelect: (it: any) => void }) {
-  if (loading) return <div className="text-xs text-neutral-500">Loading…</div>;
-  if (error) return <div className="text-xs text-red-600">{error}</div>;
-  if (!items?.length) return <div className="text-xs text-neutral-500">No history yet.</div>;
+  if (loading) return <div className="text-sm text-muted-foreground">Loading…</div>;
+  if (error) return (
+    <div className="flex items-center gap-2 text-sm text-error">
+      <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-error" />
+      {error}
+    </div>
+  );
+  if (!items?.length) return <div className="text-sm text-muted-foreground">No history yet.</div>;
   const groups = groupHistory(items);
   const order = (k: string) => (k === "Today" ? 2 : k === "Yesterday" ? 1 : 0);
   return (
     <div className="space-y-6 pr-1">
       {Object.keys(groups).sort((a, b) => order(b) - order(a)).map((k) => (
         <div key={k}>
-          <div className="mb-2"><span className="rounded-full bg-neutral-100 px-3 py-1 text-xs text-neutral-600">{k}</span></div>
+          <div className="mb-2"><span className="rounded-full bg-popover-inner px-3 py-1 text-sm text-muted-foreground">{k}</span></div>
           <ul className="space-y-2">
             {groups[k].map((it: any) => (
               <li key={it.history_item_id}>
-                <button onClick={() => onSelect(it)} className="w-full rounded-lg border border-neutral-200 p-3 text-left hover:bg-neutral-50">
+                <button onClick={() => onSelect(it)} className="w-full rounded-lg border border-border p-3 text-left transition hover:bg-secondary-hover hover:shadow-popover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
                   <div className="flex items-center justify-between gap-3">
-                    <div className="truncate text-sm font-medium">{it.voice_name || "Unknown"} · {it.model_id}</div>
-                    <div className="whitespace-nowrap text-[11px] text-neutral-500">{timeAgo(it.date_unix)}</div>
+                    <div className="truncate text-sm font-regular text-foreground">{it.voice_name || "Unknown"} · {it.model_id}</div>
+                    <div className="whitespace-nowrap text-sm text-muted-foreground">{timeAgo(it.date_unix)}</div>
                   </div>
-                  <div className="mt-1 line-clamp-2 text-xs text-neutral-600">{it.text}</div>
+                  <div className="mt-1 line-clamp-2 text-sm text-muted-foreground">{it.text}</div>
                 </button>
               </li>
             ))}
