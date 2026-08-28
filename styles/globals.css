@@ -1,6 +1,82 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* ==========================================================================
+   Fleepr Design System Tokens
+   ========================================================================== */
+:root {
+  --font-sans: "Inter", system-ui, sans-serif;
+  --font-heading: "Inter", system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", "SFMono-Regular", Consolas, monospace;
+
+  /* Light mode surfaces (RGB triplets for Tailwind alpha support) */
+  --background: 252 252 253;      /* #FCFCFD */
+  --foreground: 33 33 33;         /* #212121 */
+  --muted-foreground: 99 100 101; /* #636465 */
+  --border: 246 246 255;          /* #f6f6ff */
+  --popover: 255 255 255;         /* #ffffff */
+  --popover-inner: 242 242 245;   /* ~15% contrast from white */
+
+  --primary: 33 33 33;            /* #212121 */
+  --primary-foreground: 255 255 255;
+
+  --secondary-border: 216 216 226;  /* #d8d8e2 */
+  --secondary-foreground: 33 33 33;
+  --secondary-hover: 246 246 255;   /* #f6f6ff */
+  --secondary-active: 238 238 247;  /* #eeeef7 */
+
+  --selected: 246 246 255;
+  --selected-hover: 238 238 247;
+
+  --success: 21 128 61;
+  --success-bg: 240 253 244;
+  --error: 220 38 38;
+  --error-bg: 254 242 242;
+  --warning: 180 83 9;
+  --warning-bg: 255 251 235;
+  --info: 37 99 235;
+  --info-bg: 239 246 255;
+
+  --ring: 33 33 33;
+}
+
+.dark {
+  --background: 18 18 20;      /* #121214 */
+  --foreground: 250 250 250;   /* #FAFAFA */
+  --muted-foreground: 142 142 147; /* #8E8E93 */
+  --border: 34 34 38;          /* #222226 */
+  --popover: 26 26 30;         /* #1A1A1E */
+  --popover-inner: 38 38 43;   /* #26262B */
+
+  --primary: 250 250 250;
+  --primary-foreground: 18 18 20;
+
+  --secondary-border: 34 34 38;
+  --secondary-foreground: 250 250 250;
+  --secondary-hover: 34 34 38;
+  --secondary-active: 43 43 49;
+
+  --selected: 38 38 43;
+  --selected-hover: 43 43 49;
+
+  --success: 52 211 153;
+  --success-bg: 6 40 28;
+  --error: 248 113 113;
+  --error-bg: 42 18 21;
+  --warning: 251 191 36;
+  --warning-bg: 42 32 7;
+  --info: 96 165 250;
+  --info-bg: 18 33 63;
+
+  --ring: 250 250 250;
+}
+
+/* ==========================================================================
+   Base
+   ========================================================================== */
 
 /* Ensure proper scrolling in iframe */
 html, body {
@@ -12,6 +88,15 @@ html, body {
 body {
   margin: 0;
   padding: 0;
+}
+
+html,
+body,
+button,
+input,
+textarea,
+select {
+  font-family: var(--font-sans);
 }
 
 /* Toast animations */
@@ -29,4 +114,3 @@ body {
 .animate-slide-in {
   animation: slide-in 0.3s ease-out;
 }
-
