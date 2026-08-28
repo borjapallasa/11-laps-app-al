@@ -165,4 +165,3 @@ export function ApiKeyModal({ organizationId, onSuccess }: ApiKeyModalProps) {
 }
 
 export default ApiKeyModal;
-```[cite: 1]
