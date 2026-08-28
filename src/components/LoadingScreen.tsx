@@ -13,11 +13,11 @@ type LoadingScreenProps = {
 export function LoadingScreen({ error }: LoadingScreenProps) {
   if (error) {
     return (
-      <div className="flex items-center justify-center min-h-screen bg-gray-50">
+      <div className="flex items-center justify-center min-h-screen bg-background">
         <div className="text-center max-w-md p-8">
           <div className="mb-4">
             <svg
-              className="w-16 h-16 text-red-500 mx-auto"
+              className="w-16 h-16 text-error mx-auto"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -30,11 +30,11 @@ export function LoadingScreen({ error }: LoadingScreenProps) {
               />
             </svg>
           </div>
-          <h2 className="text-xl font-semibold text-gray-900 mb-2">
+          <h2 className="text-big font-big text-foreground mb-2">
             Initialization Error
           </h2>
-          <p className="text-gray-600 mb-4">{error}</p>
-          <p className="text-sm text-gray-500">
+          <p className="text-sm font-regular text-muted-foreground mb-4">{error}</p>
+          <p className="text-sm font-regular text-muted-foreground">
             Please refresh the page or contact support if the issue persists.
           </p>
         </div>
@@ -43,7 +43,7 @@ export function LoadingScreen({ error }: LoadingScreenProps) {
   }
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gray-50">
+    <div className="flex items-center justify-center min-h-screen bg-background">
       <div className="text-center">
         <div className="mb-4">
           <img
@@ -52,10 +52,10 @@ export function LoadingScreen({ error }: LoadingScreenProps) {
             className="h-36 w-auto animate-pulse mx-auto"
           />
         </div>
-        <h2 className="text-xl font-semibold text-gray-900 mb-2">
+        <h2 className="text-big font-big text-foreground mb-2">
           Loading ElevenLabs App
         </h2>
-        <p className="text-sm text-gray-600">Waiting for initialization...</p>
+        <p className="text-sm font-regular text-muted-foreground">Waiting for initialization...</p>
       </div>
     </div>
   );
